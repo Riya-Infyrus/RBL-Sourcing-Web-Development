@@ -1,0 +1,101 @@
+{% extends "index.html" %}
+
+{% block title %}Suppliers List{% endblock %}
+
+{% block content %}
+
+<div class="bg-white p-6 rounded-lg shadow-md">
+    <h1 class="text-2xl font-bold mb-4 text-blue-700">Suppliers List</h1>
+
+    <!-- Search Input -->
+    <input 
+        type="text" 
+        id="searchInput" 
+        placeholder="Search by name, email, or contact..."
+        class="w-full mb-4 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+    >
+
+    <!-- Add Supplier Button -->
+    <div class="flex justify-end mb-4">
+        <button 
+           onclick="window.location.href='/add_supplier'"
+            class="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg shadow">
+            + Add Supplier
+        </button>
+    </div>
+
+    <!-- Supplier Table -->
+    <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200" id="supplierTable">
+            <thead class="bg-blue-600 text-white">
+                <tr>
+                    <th class="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">Name</th>
+                    <th class="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">Email</th>
+                    <th class="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider">Contact</th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+                <!-- Dynamic rows will be injected here -->
+            </tbody>
+        </table>
+    </div>
+
+    <!-- No data message placeholder -->
+    <div id="noDataMessage" class="hidden mt-4 text-center text-red-500 font-medium">
+        No suppliers found.
+    </div>
+</div>
+
+<script>
+    fetch("http://127.0.0.1:8090/api/collections/suppliers/records")
+        .then(response => response.json())
+        .then(data => {
+            const suppliers = data.items;
+            const tbody = document.querySelector("#supplierTable tbody");
+            const noDataMessage = document.getElementById("noDataMessage");
+
+            if (!suppliers.length) {
+                noDataMessage.classList.remove("hidden");
+                return;
+            }
+
+            suppliers.forEach(supplier => {
+                const tr = document.createElement("tr");
+                tr.classList.add("hover:bg-gray-100", "transition");
+                tr.innerHTML = `
+                    <td class="px-6 py-4 whitespace-nowrap text-sm">${supplier.name}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm">${supplier.email}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm">${supplier.contact}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            enableSearch();
+        })
+        .catch(error => {
+            console.error("Error fetching supplier data:", error);
+            document.querySelector("#supplierTable tbody").innerHTML =
+                "<tr><td colspan='3' class='text-center text-red-500 py-4'>Failed to load data.</td></tr>";
+        });
+
+    function enableSearch() {
+        const searchInput = document.getElementById("searchInput");
+        searchInput.addEventListener("input", function () {
+            const filter = searchInput.value.toLowerCase();
+            const rows = document.querySelectorAll("#supplierTable tbody tr");
+
+            let visibleCount = 0;
+
+            rows.forEach(row => {
+                const text = row.innerText.toLowerCase();
+                const match = text.includes(filter);
+                row.style.display = match ? "" : "none";
+                if (match) visibleCount++;
+            });
+
+            document.getElementById("noDataMessage").classList.toggle("hidden", visibleCount !== 0);
+        });
+    }
+</script>
+
+{% endblock %}

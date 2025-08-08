@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Login | RBL Sourcing</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="relative h-full flex items-center justify-center bg-gradient-to-br from-indigo-900 via-purple-900 to-blue-900 text-white overflow-hidden">
+
+  <!-- Decorative Blobs -->
+  <div class="absolute w-72 h-72 bg-purple-500 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-pulse top-10 left-10"></div>
+  <div class="absolute w-96 h-96 bg-pink-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-ping bottom-10 right-10"></div>
+  <div class="absolute w-96 h-96 bg-blue-400 rounded-full mix-blend-multiply filter blur-2xl opacity-10 -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2"></div>
+
+  <!-- Login Form -->
+  <form method="POST" class="relative z-10 backdrop-blur-sm bg-blue-800/60 p-8 rounded-xl shadow-xl w-80 border border-white/20">
+    <h2 class="text-2xl font-bold mb-6 text-center">Login to RBL Sourcing</h2>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="mb-4">
+          {% for category, message in messages %}
+            <p class="text-red-400 text-center">{{ message }}</p>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    <label class="block mb-2 text-sm font-medium" for="email">Email or ID</label>
+    <input type="text" id="email" name="email" required
+      class="w-full p-2 rounded bg-white text-black mb-4 focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+
+    <label class="block mb-2 text-sm font-medium" for="password">Password</label>
+    <input type="password" id="password" name="password" required
+      class="w-full p-2 rounded bg-white text-black mb-6 focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+
+    <button type="submit"
+      class="w-full bg-indigo-600 hover:bg-indigo-700 py-2 rounded font-semibold transition duration-200">
+      Login
+    </button>
+
+    <div class="mt-4 text-center">
+      <a href="#" class="text-indigo-300 hover:text-white underline text-sm">
+        Forgot password?
+      </a>
+    </div>
+  </form>
+
+</body>
+</html>
