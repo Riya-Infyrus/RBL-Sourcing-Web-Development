@@ -1,11 +1,18 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="h-full">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>RBL Sourcing </title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
+    /* Ensure full height coverage */
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+
     /* Sidebar hidden off screen */
     #sidebar {
       position: fixed;
@@ -43,12 +50,12 @@
   </style>
 </head>
 
-<body class="relative bg-gradient-to-br from-indigo-100 via-blue-100 to-purple-100 text-gray-800 overflow-x-hidden">
+<body class="min-h-full bg-gradient-to-br from-indigo-100 via-blue-100 to-purple-100 text-gray-800 overflow-x-hidden">
 
   <!-- Decorative Background Blobs -->
-  <div class="absolute w-96 h-96 bg-purple-300 rounded-full filter blur-3xl opacity-30 top-10 left-10 -z-10"></div>
-  <div class="absolute w-80 h-80 bg-pink-300 rounded-full filter blur-2xl opacity-20 bottom-10 right-10 -z-10"></div>
-  <div class="absolute w-[600px] h-[600px] bg-indigo-200 rounded-full filter blur-[160px] opacity-10 -top-20 left-1/2 transform -translate-x-1/2 -z-10"></div>
+  <div class="fixed w-96 h-96 bg-purple-300 rounded-full filter blur-3xl opacity-30 top-10 left-10 -z-10"></div>
+  <div class="fixed w-80 h-80 bg-pink-300 rounded-full filter blur-2xl opacity-20 bottom-10 right-10 -z-10"></div>
+  <div class="fixed w-[600px] h-[600px] bg-indigo-200 rounded-full filter blur-[160px] opacity-10 -top-20 left-1/2 transform -translate-x-1/2 -z-10"></div>
 
   <!-- Header -->
   <header class="fixed top-0 left-0 right-0 bg-white/80 backdrop-blur-md shadow-md flex items-center justify-between px-6 py-4 z-50 h-16">
@@ -57,12 +64,12 @@
       <h1 class="text-xl font-bold">RBL Sourcing</h1>
     </div>
     <div>
-    <form method="POST" action="/logout">
-      <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition">
-        Logout
-      </button>
-    </form>
-  </div>
+      <form method="POST" action="/logout">
+        <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition">
+          Logout
+        </button>
+      </form>
+    </div>
   </header>
 
   <!-- Sidebar hover zone -->
@@ -82,14 +89,10 @@
   </aside>
 
   <!-- Main Content -->
-  <main class="pt-20 px-6 max-w-7xl mx-auto">
-    
-  
+  <main class="min-h-screen pt-20 px-6 max-w-7xl mx-auto pb-10">
     {% block content %}{% endblock %}
-    
   </main>
   
 </body>
-
 
 </html>
