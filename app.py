@@ -38,13 +38,21 @@ def login():
     if request.method == 'POST':
         email = request.form['email']
         password = request.form['password']
+        
         try:
-            user = pb.collection('users').auth_with_password(email, password)
-            session['user'] = user.token
-            return redirect(url_for('index'))
-        except ClientResponseError:
-            flash('Invalid email or password.', 'error')
-            return redirect(url_for('login'))
+            # Authenticate user
+            auth_data = pb.collection("users").auth_with_password(email, password)
+            
+            # Store user info in session
+            session['user_id'] = auth_data.record.id
+            session['user_email'] = auth_data.record.email
+            session['user_name'] = auth_data.record.name if hasattr(auth_data.record, 'name') and auth_data.record.name else auth_data.record.email.split('@')[0]
+            session['auth_token'] = auth_data.token
+            
+            return redirect(url_for('dashboard'))
+        except Exception as e:
+            flash('Invalid credentials', 'error')
+            
     return render_template('login.html')
 
 @app.route('/index')
@@ -155,6 +163,25 @@ def edit_staff(user_id):
 # Staff Management - End
 
 #######################################################
+
+
+@app.route('/forgot-password', methods=['GET', 'POST'])
+def forgot_password():
+    if request.method == 'POST':
+        email = request.form.get('email')
+        
+        try:
+            # Request password reset from PocketBase
+            pb.collection('users').request_password_reset(email)
+            flash('Password reset email sent! Please check your inbox.', 'success')
+            return redirect(url_for('login'))
+        except ClientResponseError as e:
+            if e.status == 404:
+                flash('No account found with that email address.', 'error')
+            else:
+                flash('Error sending password reset email. Please try again.', 'error')
+    
+    return render_template('forgot_password.html')
 
 
 
