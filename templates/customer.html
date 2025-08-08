@@ -1,0 +1,98 @@
+{% extends "index.html" %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto p-6">
+
+  <!-- Header -->
+  <div class="flex justify-between items-center mb-8">
+    <h1 class="text-4xl font-extrabold text-gray-800 tracking-tight">Customer Dashboard</h1>
+    <button onclick="toggleForm()" class="bg-blue-600 text-white px-5 py-2 rounded-lg shadow hover:bg-blue-700 transition duration-200">
+      + Add Customer
+    </button>
+  </div>
+
+  <!-- Summary Cards -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mb-10">
+    <div class="bg-white p-6 rounded-lg shadow text-center">
+      <p class="text-gray-500">Total Customers</p>
+      <h2 class="text-3xl font-bold text-blue-700 mt-2">{{ total_customers }}</h2>
+    </div>
+    <div class="bg-white p-6 rounded-lg shadow text-center col-span-2">
+      <p class="text-gray-500 mb-2">Recently Added</p>
+      {% if recent_customers %}
+      <ul class="text-sm text-gray-700 grid sm:grid-cols-2 md:grid-cols-3 gap-2">
+        {% for customer in recent_customers %}
+          <li class="bg-gray-100 px-3 py-1 rounded shadow-sm">
+            <strong>{{ customer.name }}</strong><br>
+            <span class="text-xs text-gray-500">{{ customer.created|datetimeformat }}</span>
+          </li>
+        {% endfor %}
+      </ul>
+      {% else %}
+      <p class="text-gray-400 text-sm">No recent customers.</p>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Add Customer Form -->
+  <div id="addCustomerForm" class="hidden bg-white p-6 rounded-lg shadow mb-10">
+    <h2 class="text-2xl font-semibold mb-4 text-gray-800 text-center">Add New Customer</h2>
+    <form method="POST" action="/add_customer" class="space-y-4">
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <input type="text" name="name" placeholder="Full Name" required class="px-4 py-2 border rounded w-full focus:outline-none focus:ring-2 focus:ring-blue-400">
+        <input type="email" name="email" placeholder="Email" class="px-4 py-2 border rounded w-full focus:outline-none focus:ring-2 focus:ring-blue-400">
+        <input type="tel" name="phone" placeholder="Phone Number" required class="px-4 py-2 border rounded w-full focus:outline-none focus:ring-2 focus:ring-blue-400">
+        <input type="text" name="address" placeholder="Address" class="px-4 py-2 border rounded w-full focus:outline-none focus:ring-2 focus:ring-blue-400">
+      </div>
+      <textarea name="notes" placeholder="Notes..." class="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-400"></textarea>
+      <div class="flex justify-end gap-4">
+        <button type="button" onclick="toggleForm()" class="px-4 py-2 border rounded text-gray-700 hover:bg-gray-100 transition">Cancel</button>
+        <button type="submit" class="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700 transition">Save</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Customer Table -->
+  <div class="bg-white p-6 rounded-lg shadow">
+    <h2 class="text-2xl font-semibold mb-4 text-gray-800">All Customers</h2>
+    <div class="overflow-x-auto">
+      <table class="min-w-full border border-gray-200 divide-y divide-gray-100">
+        <thead class="bg-gray-100 text-left text-sm font-semibold text-gray-600">
+          <tr>
+            <th class="px-4 py-3">Name</th>
+            <th class="px-4 py-3">Email</th>
+            <th class="px-4 py-3">Phone</th>
+            <th class="px-4 py-3">Address</th>
+            <th class="px-4 py-3">Created</th>
+          </tr>
+        </thead>
+        <tbody class="text-sm text-gray-700">
+          {% for customer in customers %}
+          <tr class="hover:bg-gray-50">
+            <td class="px-4 py-3 border-t">{{ customer.name }}</td>
+            <td class="px-4 py-3 border-t">{{ customer.email }}</td>
+            <td class="px-4 py-3 border-t">{{ customer.phone }}</td>
+            <td class="px-4 py-3 border-t">{{ customer.address }}</td>
+            <td class="px-4 py-3 border-t">{{ customer.created|datetimeformat }}</td>
+          </tr>
+          {% else %}
+          <tr>
+            <td colspan="5" class="text-center text-gray-400 py-6">No customers found.</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+  function toggleForm() {
+    const form = document.getElementById("addCustomerForm");
+    form.classList.toggle("hidden");
+    if (!form.classList.contains("hidden")) {
+      form.scrollIntoView({ behavior: "smooth" });
+    }
+  }
+</script>
+{% endblock %}

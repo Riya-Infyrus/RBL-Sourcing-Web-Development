@@ -1,0 +1,60 @@
+{% extends "index.html" %}
+
+{% block content %}
+<h2 class="text-3xl font-extrabold mb-6">Inquiry #{{ inquiry.id }} Status</h2>
+
+<div class="overflow-x-auto">
+  <div class="flex items-center space-x-2 whitespace-nowrap py-4">
+    {% set current_index = status_flow | map(attribute=0) | list | index(current_status) %}
+    {% for step, emoji, color in status_flow %}
+      <div class="flex items-center space-x-2">
+        <div class="flex items-center justify-center w-10 h-10 rounded-full font-bold
+          {% if loop.index0 <= current_index %}
+            {{ color }} text-white shadow-lg
+          {% else %}
+            bg-gray-300 text-gray-500
+          {% endif %}
+        ">
+          {{ emoji }}
+        </div>
+        <div class="min-w-max text-sm font-semibold
+          {% if loop.index0 <= current_index %}
+            text-gray-900
+          {% else %}
+            text-gray-400
+          {% endif %}
+        ">
+          {{ step }}
+        </div>
+        {% if not loop.last %}
+          <div class="text-gray-400 select-none text-lg font-bold">&#8594;</div>
+        {% endif %}
+      </div>
+    {% endfor %}
+  </div>
+</div>
+
+<p class="mt-2 text-gray-600 text-sm">Last updated: {{ updated_at|datetimeformat }}</p>
+
+<h3 class="text-xl mt-8 mb-2 font-semibold">Customer</h3>
+<p>{{ customer.name }} — {{ customer.email }} — {{ customer.phone }}</p>
+
+<h3 class="text-xl mt-6 mb-2 font-semibold">Products</h3>
+<ul class="list-disc pl-5 space-y-1">
+  {% for product in products %}
+    <li>{{ product.name }} (ID: {{ product.id }})</li>
+  {% endfor %}
+</ul>
+
+<!-- Update status form -->
+<form method="POST" action="{{ url_for('update_inquiry_status', inquiry_id=inquiry.id) }}" class="mt-8 max-w-sm space-y-4">
+  <label for="status" class="block font-semibold mb-1">Update Status:</label>
+  <select name="status" id="status" class="border rounded w-full py-2 px-3">
+    {% for step, emoji, color in status_flow %}
+      <option value="{{ step }}" {% if step == current_status %}selected{% endif %}>{{ emoji }} {{ step }}</option>
+    {% endfor %}
+  </select>
+  <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Save</button>
+</form>
+
+{% endblock %}

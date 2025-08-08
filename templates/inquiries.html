@@ -1,0 +1,75 @@
+{% extends "index.html" %}
+
+{% block content %}
+<h2 class="text-3xl font-semibold mb-6">Inquiries</h2>
+
+<table class="min-w-full table-auto border-collapse border border-gray-300">
+  <thead>
+    <tr class="bg-indigo-200">
+      <th class="border border-gray-300 px-4 py-2 text-left">Inquiry ID</th>
+      <th class="border border-gray-300 px-4 py-2 text-left">Customer</th>
+      <th class="border border-gray-300 px-4 py-2 text-left">Products</th>
+      <th class="border border-gray-300 px-4 py-2 text-left">Status</th>
+      <th class="border border-gray-300 px-4 py-2 text-left">Last Updated</th>
+      <th class="border border-gray-300 px-4 py-2 text-left">Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for inquiry in inquiries %}
+    <tr class="hover:bg-indigo-50">
+      <td class="border border-gray-300 px-4 py-2">{{ inquiry.id }}</td>
+      
+      <td class="border border-gray-300 px-4 py-2">
+        {% if inquiry.customer_obj %}
+          {{ inquiry.customer_obj.name }}
+        {% else %}
+          Unknown
+        {% endif %}
+      </td>
+      
+      <td class="border border-gray-300 px-4 py-2 space-x-1">
+        {% for product in inquiry.product_objs %}
+          {% if product %}
+          <span class="inline-block bg-indigo-100 text-indigo-800 px-2 py-1 rounded text-xs font-medium">{{ product.name }}</span>
+          {% endif %}
+        {% endfor %}
+      </td>
+      
+      <td class="border border-gray-300 px-4 py-2">
+        <form method="POST" action="{{ url_for('inquiries') }}">
+          <input type="hidden" name="inquiry_id" value="{{ inquiry.id }}">
+          <select name="status" class="border rounded px-2 py-1">
+            {% for status_name, emoji, bg_class in status_flow %}
+              <option value="{{ status_name }}" {% if inquiry.status == status_name %}selected{% endif %}>
+                {{ emoji }} {{ status_name }}
+              </option>
+            {% endfor %}
+          </select>
+          <button type="submit" class="ml-2 bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700">
+            Update
+          </button>
+        </form>
+      </td>
+      
+      <td class="border border-gray-300 px-4 py-2">
+        {{ inquiry.updated | datetimeformat }}
+      </td>
+      
+      <td class="border border-gray-300 px-4 py-2">
+        <a href="{{ url_for('inquiry_detail', inquiry_id=inquiry.id) }}" class="text-indigo-600 hover:underline">Details</a>
+      </td>
+    </tr>
+    {% else %}
+    <tr>
+      <td colspan="6" class="text-center py-4 text-gray-500">No inquiries found.</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<div class="mt-6">
+  <a href="{{ url_for('add_inquiry') }}" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded shadow">
+    + Add New Inquiry
+  </a>
+</div>
+{% endblock %}
