@@ -64,7 +64,14 @@ def dashboard():
 
 @app.route('/staff')
 def staff():
-    return render_template('staff.html')
+    try:
+        # Fetch all users from PocketBase users collection
+        users = pb.collection('users').get_full_list()
+    except ClientResponseError as e:
+        flash(f"Error fetching users: {e}", 'error')
+        users = []
+    
+    return render_template('staff.html', users=users)
 
 @app.route('/reminders')
 def reminders():
@@ -265,4 +272,5 @@ def logout():
     return redirect(url_for('login'))
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host="127.0.0.1", port=5050, debug=True)
+
