@@ -61,10 +61,102 @@ def home():
 def dashboard():
         return render_template("dashboard.html")
 
+#######################################################
 
+# Staff Management - Start
+
+#######################################################
+
+# View Staff
 @app.route('/staff')
 def staff():
-    return render_template('staff.html')
+    try:
+        # Fetch all users from PocketBase users collection
+        users = pb.collection('users').get_full_list()
+    except ClientResponseError as e:
+        flash(f"Error fetching users: {e}", 'error')
+        users = []
+    
+    return render_template('staff.html', users=users)
+
+# Add Staff
+@app.route('/add_staff', methods=['GET', 'POST'])
+def add_staff():
+    if request.method == 'POST':
+        try:
+            name = request.form.get('name')
+            email = request.form.get('email')
+            role = request.form.get('role')
+            password = request.form.get('password')
+            verified = 'verified' in request.form
+            
+            # Create new user in PocketBase
+            user_data = {
+                'Name': name,  # Changed from 'name' to 'Name'
+                'email': email,
+                'role': role,
+                'password': password,
+                'passwordConfirm': password,
+                'verified': verified,
+                'emailVisibility': True  # Added this field
+            }
+            
+            pb.collection('users').create(user_data)
+            flash('Staff member created successfully!', 'success')
+            return redirect(url_for('staff'))
+            
+        except ClientResponseError as e:
+            flash(f'Error creating staff member: {e}', 'error')
+    
+    return render_template('add_staff.html')
+
+# Edit Staff
+@app.route('/edit_staff/<user_id>', methods=['GET', 'POST'])
+def edit_staff(user_id):
+    try:
+        # Get user data
+        user = pb.collection('users').get_one(user_id)
+        
+        if request.method == 'POST':
+            name = request.form.get('name')
+            email = request.form.get('email')
+            role = request.form.get('role')
+            password = request.form.get('password')
+            verified = 'verified' in request.form
+            
+            # Prepare update data
+            update_data = {
+                'Name': name,  # Changed from 'name' to 'Name'
+                'email': email,
+                'role': role,
+                'verified': verified,
+                'emailVisibility': True  # Added this field
+            }
+            
+            # Only update password if provided
+            if password:
+                update_data['password'] = password
+                update_data['passwordConfirm'] = password
+            
+            # Update user in PocketBase
+            pb.collection('users').update(user_id, update_data)
+            flash('Staff member updated successfully!', 'success')
+            return redirect(url_for('staff'))
+        
+        return render_template('edit_staff.html', user=user)
+        
+    except ClientResponseError as e:
+        flash(f'Error: {e}', 'error')
+        return redirect(url_for('staff'))
+    
+
+#######################################################
+
+# Staff Management - End
+
+#######################################################
+
+
 
 @app.route('/reminders')
 def reminders():
@@ -265,4 +357,5 @@ def logout():
     return redirect(url_for('login'))
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host="127.0.0.1", port=5050, debug=True)
+
